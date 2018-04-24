@@ -33,27 +33,27 @@ import io.datatree.Tree;
  * or the reason for rejection. Sample waterfall processing:<br>
  *
  * <pre>
- * Promise.resolve().then(in -> {
+ * Promise.resolve().then(in -&gt; {
  *
  * 	Tree out = new Tree();
  * 	out.put("a", 1);
  * 	out.put("b", 2);
  * 	return out;
  *
- * }).then(in -> {
+ * }).then(in -&gt; {
  *
  * 	int a = in.get("a", -1);
  * 	int b = in.get("b", -1);
  * 	return a + b;
  *
- * }).then(in -> {
+ * }).then(in -&gt; {
  *
  * 	int sub = in.asInteger();
  *
  * 	// You can return an another Promise:
  * 	return Promise.resolve("OK!");
  *
- * }).then(in -> {
+ * }).then(in -&gt; {
  *
  * 	if (!"OK".equals(in.asString())) {
  * 		throw new Exception("Invalid value!");
@@ -62,7 +62,7 @@ import io.datatree.Tree;
  * 	// The "catch" is a protected name in Java,
  * 	// use "catchError" instead:
  *
- * }).catchError(err -> {
+ * }).catchError(err -&gt; {
  *
  * 	System.out.println("Error: " + err);
  * 	return "foo";
@@ -88,12 +88,12 @@ public class Promise {
 	// --- STATIC CONSTRUCTORS ---
 
 	/**
-	 * Returns a Promise object that is resolved with {@code null} value.
+	 * Returns a Promise object that is resolved with {@code Tree(null)} value.
 	 *
 	 * @return new RESOLVED/COMPLETED Promise
 	 */
 	public static final Promise resolve() {
-		return new Promise(CompletableFuture.completedFuture(null));
+		return new Promise(CompletableFuture.completedFuture(new Tree((Tree) null, null, null)));
 	}
 
 	/**
@@ -126,10 +126,7 @@ public class Promise {
 	}
 
 	/**
-	 * Returns a Promise object that is rejected with an empty Exception.
-	 *
-	 * @param error
-	 *            error state of the new Promise
+	 * Returns a Promise object that is rejected with an IllegalStateException.
 	 *
 	 * @return new REJECTED/COMPLETED EXCEPTIONALLY Promise
 	 */
@@ -148,13 +145,17 @@ public class Promise {
 
 	/**
 	 * Creates a Promise with an asynchronous initializer. Sample code:
+	 * 
 	 * <pre>
-	 * <b>return new Promise((r) -> {</b>
+	 * <b>return new Promise((r) -&gt; {</b>
 	 *   Tree value = new Tree();
 	 *   value.put("a.b.c", 3);
 	 *   r.resolve(value);
 	 * <b>});</b>
 	 * </pre>
+	 * 
+	 * @param initializer
+	 *            internal initalizer logic
 	 */
 	public Promise(Initializer initializer) {
 		root = future = new CompletableFuture<>();
@@ -177,32 +178,28 @@ public class Promise {
 		root = future = toCompletableFuture(value);
 	}
 
-	// --- PROTECTED CONSTRUCTORS ---
-
-	protected Promise(CompletableFuture<Tree> future, CompletableFuture<Tree> root) {
-		this.future = future;
-		this.root = root;
-	}
+	// --- PROTECTED CONSTRUCTOR ---
 
 	public Promise(Object value, CompletableFuture<Tree> root) {
 		future = toCompletableFuture(value);
 		this.root = root;
 	}
-	
+
 	// --- WATERFALL FUNCTION ---
 
 	/**
 	 * Promises can be used to unnest asynchronous functions and allows one to
 	 * chain multiple functions together - increasing readability and making
 	 * individual functions, within the chain, more reusable. Sample code:
+	 * 
 	 * <pre>
-	 * return Promise.resolve().<b>then(value -> {</b>
+	 * return Promise.resolve().<b>then(value -&gt; {</b>
 	 *   <i>// ...do something...</i>
 	 *   return value;
-	 * <b>}).then(value -> {</b>
+	 * <b>}).then(value -&gt; {</b>
 	 *   <i>// ...do something...</i>
 	 *   return value;
-	 * <b>})</b>.catchError(error -> {
+	 * <b>})</b>.catchError(error -&gt; {
 	 *   <i>// ...error handling...</i>
 	 *   return new Tree().put("key.subkey", "value");
 	 * });
@@ -233,11 +230,12 @@ public class Promise {
 	 * Promises can be used to unnest asynchronous functions and allows one to
 	 * chain multiple functions together - increasing readability and making
 	 * individual functions, within the chain, more reusable. Sample code:
+	 * 
 	 * <pre>
-	 * return Promise.resolve().<b>then((value) -> {</b>
+	 * return Promise.resolve().<b>then((value) -&gt; {</b>
 	 *   <i>// ...do something without any return value...</i>
 	 * <b>});</b>
-	 * <pre>
+	 * </pre>
 	 * 
 	 * @param action
 	 *            next action in the invocation chain
@@ -263,10 +261,11 @@ public class Promise {
 	/**
 	 * The catchError() method returns a Promise and deals with rejected cases
 	 * only. Sample:
+	 * 
 	 * <pre>
-	 * Promise.resolve().then(() -> {
+	 * Promise.resolve().then(() -&gt; {
 	 *   return 123;
-	 * <b>}).catchError(error -> {</b>
+	 * <b>}).catchError(error -&gt; {</b>
 	 *   // ...do something, with a return value...
 	 *   return 456;
 	 * });
@@ -296,10 +295,11 @@ public class Promise {
 	/**
 	 * The catchError() method returns a Promise and deals with rejected cases
 	 * only. Sample:
+	 * 
 	 * <pre>
-	 * Promise.resolve().then(() -> {
+	 * Promise.resolve().then(() -&gt; {
 	 *   return 123;
-	 * <b>}).catchError(error -> {</b>
+	 * <b>}).catchError(error -&gt; {</b>
 	 *   // ...do something, without a return value...
 	 * });
 	 * </pre>
@@ -326,10 +326,11 @@ public class Promise {
 
 	/**
 	 * If not already completed, sets the value to {@code null}. Sample code:
+	 * 
 	 * <pre>
-	 * Promise p = new Promise().then(value -> {
-	 *   System.out.println("Completed!");
-	 *   return value;
+	 * Promise p = new Promise().then(value -&gt; {
+	 * 	System.out.println("Completed!");
+	 * 	return value;
 	 * });
 	 * 
 	 * // Invoke chain:
@@ -345,10 +346,11 @@ public class Promise {
 
 	/**
 	 * If not already completed, sets the value to the given value. Sample code:
+	 * 
 	 * <pre>
-	 * Promise p = new Promise().then(value -> {
-	 *   System.out.println("Received: " + value);
-	 *   return value;
+	 * Promise p = new Promise().then(value -&gt; {
+	 * 	System.out.println("Received: " + value);
+	 * 	return value;
 	 * });
 	 * 
 	 * // Invoke chain:
@@ -372,10 +374,11 @@ public class Promise {
 	/**
 	 * If not already completed, sets the exception state to the given
 	 * exception. Sample code:<br>
+	 * 
 	 * <pre>
-	 * Promise p = new Promise().catchError((error) -> {
-	 *   System.out.println("Received: " + error);
-	 *   return null;
+	 * Promise p = new Promise().catchError((error) -&gt; {
+	 * 	System.out.println("Received: " + error);
+	 * 	return null;
 	 * });
 	 * 
 	 * // Invoke chain:
@@ -583,7 +586,8 @@ public class Promise {
 	/**
 	 * Converts an Object to a (completed or uncompleted) CompletableFuture.
 	 * 
-	 * @param object input Object
+	 * @param object
+	 *            input Object
 	 * @return object converted to CompletableFuture
 	 */
 	protected static final CompletableFuture<Tree> toCompletableFuture(Object object) {
@@ -619,7 +623,8 @@ public class Promise {
 	/**
 	 * Converts an Object to a Tree.
 	 * 
-	 * @param object input Object
+	 * @param object
+	 *            input Object
 	 * @return object converted to Tree
 	 */
 	@SuppressWarnings("unchecked")
@@ -693,8 +698,11 @@ public class Promise {
 		/**
 		 * Performs this operation on the given argument.
 		 *
-		 * @param t
+		 * @param in
 		 *            the input argument
+		 *            
+		 * @throws Throwable
+		 *             any processing error
 		 */
 		void accept(IN in) throws Throwable;
 
@@ -706,9 +714,13 @@ public class Promise {
 		/**
 		 * Applies this function to the given argument.
 		 *
-		 * @param t
+		 * @param in
 		 *            the function argument
+		 *            
 		 * @return the function result
+		 * 
+		 * @throws Throwable
+		 *             any processing error
 		 */
 		Object apply(IN in) throws Throwable;
 

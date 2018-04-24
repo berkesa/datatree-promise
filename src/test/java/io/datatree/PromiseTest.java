@@ -17,6 +17,12 @@
  */
 package io.datatree;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
 
 import junit.framework.TestCase;
@@ -28,7 +34,7 @@ public class PromiseTest extends TestCase {
 
 		// Complete with null
 		Tree out = Promise.resolve().waitFor();
-		assertNull(out);
+		assertTrue(out.isNull());
 
 		// Complete with an empty structure
 		out = new Promise(new Tree()).waitFor();
@@ -167,6 +173,14 @@ public class PromiseTest extends TestCase {
 		// Check result
 		assertEquals(5, result.get("num", -1));
 		assertTrue(result.get("bool", false));
+	}
+
+	@Test
+	public void testConstructor() throws Exception {
+		CompletableFuture<Tree> future = new CompletableFuture<Tree>();
+		Promise p = new Promise(future);
+		p.complete();
+		assertTrue(future != p.toCompletableFuture());
 	}
 	
 	@Test
@@ -317,12 +331,158 @@ public class PromiseTest extends TestCase {
 	
 	@Test
 	public void testSimpleComplete() throws Exception {
+		
+		// Complete in constructor
 		Promise p = Promise.resolve();
 		Tree out = p.waitFor();
-		assertNull(out);
+		assertTrue(out.isNull());
+		assertTrue(p.isDone());
+		assertTrue(p.isResolved());
+		assertFalse(p.isRejected());
+		
+		// Complete later
+		p = new Promise();
+		p.complete();
+		out = p.waitFor();
+		assertTrue(out.isNull());
 		assertTrue(p.isDone());
 		assertTrue(p.isResolved());
 		assertFalse(p.isRejected());
 	}
 	
+	@Test
+	public void testReturnException() throws Exception {
+		Promise p1 = Promise.resolve(0).then(in -> {
+			if (in.asInteger() == 0) {
+				return new IllegalArgumentException("test");
+			}
+			return 1;
+		}).catchError(err -> {
+			return 2;
+		});
+		Tree out1 = p1.waitFor();
+		assertTrue(p1.isDone());
+		assertTrue(p1.isResolved());
+		assertFalse(p1.isRejected());
+		assertEquals(2, (int) out1.asInteger());
+	}
+	
+	@Test
+	public void testAllCollections() throws Exception {
+		LinkedList<Promise> list = new LinkedList<>();
+		AtomicInteger count = new AtomicInteger();
+		for (int i = 0; i < 10; i++) {
+			list.add(new Promise(r -> {
+				new Thread() {
+					public void run() {
+						try {
+							Thread.sleep(10);
+							r.resolve(count.incrementAndGet());
+						} catch (Exception e) {
+							r.reject(e);
+						}
+					}
+				}.run();
+			}));
+		}
+		
+		// Invoke all
+		Promise p = Promise.all(list);
+		Tree out = p.waitFor();
+		assertTrue(out.isEnumeration());
+		assertEquals(10, out.size());
+		
+		List<Integer> outList = out.asList(Integer.class);
+		Collections.sort(outList);
+		for (int i = 0; i < 10; i++) {
+			assertEquals(i, outList.get(i).intValue() - 1);
+		}
+	}
+
+	@Test
+	public void testAllArray() throws Exception {
+		Promise[] array = new Promise[10];
+		AtomicInteger count = new AtomicInteger();
+		for (int i = 0; i < 10; i++) {
+			array[i] = new Promise(r -> {
+				new Thread() {
+					public void run() {
+						try {
+							Thread.sleep(10);
+							r.resolve(count.incrementAndGet());
+						} catch (Exception e) {
+							r.reject(e);
+						}
+					}
+				}.run();
+			});
+		}
+		
+		// Invoke all
+		Promise p = Promise.all(array);
+		Tree out = p.waitFor();
+		assertTrue(out.isEnumeration());
+		assertEquals(10, out.size());
+		
+		List<Integer> outList = out.asList(Integer.class);
+		Collections.sort(outList);
+		for (int i = 0; i < 10; i++) {
+			assertEquals(i, outList.get(i).intValue() - 1);
+		}
+	}
+
+	@Test
+	public void testRaceCollections() throws Exception {
+		LinkedList<Promise> list = new LinkedList<>();
+		AtomicInteger count = new AtomicInteger();
+		for (int i = 0; i < 10; i++) {
+			list.add(new Promise(r -> {
+				new Thread() {
+					public void run() {
+						try {
+							Thread.sleep(10);
+							r.resolve(count.incrementAndGet());
+						} catch (Exception e) {
+							r.reject(e);
+						}
+					}
+				}.run();
+			}));
+		}
+		
+		// Race
+		Promise p = Promise.race(list);
+		Tree out = p.waitFor();
+		assertTrue(out.isPrimitive());
+		assertEquals(1, out.size());
+		assertTrue(out.asInteger() < 11);
+	}
+
+	@Test
+	public void testRaceArray() throws Exception {
+		Promise[] array = new Promise[10];
+		AtomicInteger count = new AtomicInteger();
+		for (int i = 0; i < 10; i++) {
+			array[i] = new Promise(r -> {
+				new Thread() {
+					public void run() {
+						try {
+							Thread.sleep(10);
+							r.resolve(count.incrementAndGet());
+						} catch (Exception e) {
+							r.reject(e);
+						}
+					}
+				}.run();
+			});
+		}
+		
+		// Race
+		Promise p = Promise.race(array);
+		Tree out = p.waitFor();
+		assertTrue(out.isPrimitive());
+		assertEquals(1, out.size());
+		assertTrue(out.asInteger() < 11);
+	}
+
 }
