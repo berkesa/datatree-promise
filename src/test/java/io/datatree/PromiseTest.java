@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class PromiseTest extends TestCase {
@@ -384,7 +385,7 @@ public class PromiseTest extends TestCase {
 							r.reject(e);
 						}
 					}
-				}.run();
+				}.start();
 			}));
 		}
 		
@@ -421,7 +422,7 @@ public class PromiseTest extends TestCase {
 							r.reject(e);
 						}
 					}
-				}.run();
+				}.start();
 			});
 		}
 		
@@ -456,7 +457,7 @@ public class PromiseTest extends TestCase {
 							r.reject(e);
 						}
 					}
-				}.run();
+				}.start();
 			}));
 		}
 		
@@ -517,7 +518,7 @@ public class PromiseTest extends TestCase {
 				return;
 			}
 		}
-		assertTrue(false);
+		throw new AssertionFailedError();
 	}
 	
 	@Test
@@ -533,7 +534,7 @@ public class PromiseTest extends TestCase {
 				return;
 			}
 		}
-		assertTrue(false);
+		throw new AssertionFailedError();
 	}
 	
 	@Test
@@ -571,7 +572,21 @@ public class PromiseTest extends TestCase {
 				return;
 			}
 		}
-		assertTrue(false);
+		throw new AssertionFailedError();
 	}
-	
+
+	@Test
+	public void testResolveWithError() throws Exception {
+		try {
+			new Promise(r -> {
+				r.resolve( new IllegalAccessError("test1"));
+			}).waitFor();
+		} catch (Throwable e) {
+			if (e.toString().contains("test1")) {
+				return;
+			}
+		}
+		throw new AssertionFailedError();
+	}
+		
 }

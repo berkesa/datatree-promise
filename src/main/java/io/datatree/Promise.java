@@ -606,16 +606,7 @@ public class Promise {
 			return future;
 		}
 		if (object instanceof CompletionStage) {
-			CompletableFuture<Tree> future = new CompletableFuture<>();
-			((CompletionStage<?>) object).handle((value, error) -> {
-				if (error == null) {
-					future.complete(toTree(value));
-				} else {
-					future.completeExceptionally(error);
-				}
-				return null;
-			});
-			return future;
+			return (((CompletionStage<?>) object).toCompletableFuture()).thenCompose(Promise::toCompletableFuture);
 		}
 		return CompletableFuture.completedFuture(toTree(object));
 	}
