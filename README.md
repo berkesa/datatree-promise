@@ -11,7 +11,7 @@ resolved value, or a reason that it's not resolved (e.g., a network error
 occurred). Promise users can attach callbacks to handle the fulfilled value
 or the reason for rejection.
 
-Sample "waterfall" processing:
+## Usage
 
 ```java
 Promise.resolve().then(in -> {
@@ -50,3 +50,23 @@ Promise.resolve().then(in -> {
 
 });
 ```
+
+## Download
+
+If you use Maven, add the following dependency to your pom.xml:
+
+```xml
+<dependency>
+    <groupId>com.github.berkesa</groupId>
+    <artifactId>datatree-promise</artifactId>
+    <version>1.0.1</version>
+</dependency>
+```
+
+## Requirements:
+
+The DataTree API requires Java 8.
+
+## License:
+
+DataTree is licensed under the Apache License V2, you can use it in your commercial products for free.
