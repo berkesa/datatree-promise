@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/berkesa/datatree-promise.svg?branch=master)](https://travis-ci.org/berkesa/datatree-promise)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/berkesa/datatree-adapters/master/LICENSE)
+
 # Promise for Java
 
 ES6-like Promise, based on the Java8's CompletableFuture API. A Promise is an
