@@ -17,7 +17,9 @@
  */
 package io.datatree;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -64,7 +66,7 @@ public class PromiseTest extends TestCase {
 		}).catchError(err -> {
 			return "y";
 		});
-		promise.complete(new Exception());
+		promise.complete(new IllegalArgumentException());
 		out = promise.waitFor();
 		assertEquals("y", out.asString());
 		
@@ -217,7 +219,7 @@ public class PromiseTest extends TestCase {
 	@Test
 	public void testInvalidInit() throws Exception {
 		Promise p = new Promise(r -> {
-			throw new Exception("error");
+			throw new IllegalArgumentException("error");
 		}).catchError(err -> {
 			return 123;
 		});
@@ -391,12 +393,17 @@ public class PromiseTest extends TestCase {
 		Tree out = p.waitFor();
 		assertTrue(out.isEnumeration());
 		assertEquals(10, out.size());
+		assertTrue(p.isResolved());
 		
 		List<Integer> outList = out.asList(Integer.class);
 		Collections.sort(outList);
 		for (int i = 0; i < 10; i++) {
 			assertEquals(i, outList.get(i).intValue() - 1);
 		}
+		
+		// Null/empty input
+		assertTrue(Promise.all((Collection<Promise>) null).waitFor().isNull());
+		assertTrue(Promise.all(Collections.emptyList()).waitFor().isNull());
 	}
 
 	@Test
@@ -429,6 +436,9 @@ public class PromiseTest extends TestCase {
 		for (int i = 0; i < 10; i++) {
 			assertEquals(i, outList.get(i).intValue() - 1);
 		}
+		
+		// Null/empty input
+		assertTrue(Promise.all(new Promise[0]).waitFor().isNull());
 	}
 
 	@Test
@@ -456,6 +466,10 @@ public class PromiseTest extends TestCase {
 		assertTrue(out.isPrimitive());
 		assertEquals(1, out.size());
 		assertTrue(out.asInteger() < 11);
+		assertTrue(p.isResolved());
+		
+		// Null/empty input
+		assertTrue(Promise.race((Collection<Promise>) null).waitFor().isNull());
 	}
 
 	@Test
@@ -473,7 +487,7 @@ public class PromiseTest extends TestCase {
 							r.reject(e);
 						}
 					}
-				}.run();
+				}.start();
 			});
 		}
 		
@@ -483,6 +497,81 @@ public class PromiseTest extends TestCase {
 		assertTrue(out.isPrimitive());
 		assertEquals(1, out.size());
 		assertTrue(out.asInteger() < 11);
+		assertTrue(p.isResolved());
+		
+		// Null/empty input
+		assertTrue(Promise.race(new Promise[0]).waitFor().isNull());
 	}
 
+	@Test
+	public void testThrowInFunction() throws Exception {
+		try {
+			Promise.resolve().then(in -> {
+				if (in.isNull()) {
+					throw new IllegalAccessError("test1");
+				}
+				return 1;
+			}).waitFor();
+		} catch (Throwable e) {
+			if (e.toString().contains("test1")) {
+				return;
+			}
+		}
+		assertTrue(false);
+	}
+	
+	@Test
+	public void testThrowInConsumer() throws Exception {
+		try {
+			Promise.resolve().then(in -> {
+				if (in.isNull()) {
+					throw new IllegalAccessError("test1");
+				}
+			}).waitFor();
+		} catch (Throwable e) {
+			if (e.toString().contains("test1")) {
+				return;
+			}
+		}
+		assertTrue(false);
+	}
+	
+	@Test
+	public void testToTree() throws Exception {
+		Tree t1 = Promise.toTree(null); 
+		assertTrue(t1.isNull());
+		
+		HashMap<String, Object> map = new  HashMap<String, Object>();
+		map.put("a", 3);
+		Tree t2 = Promise.toTree(map);
+		assertEquals(3, t2.get("a", 1));		
+		
+		LinkedList<Integer> list = new LinkedList<>();
+		list.add(12);
+		Tree t3 = Promise.toTree(list);
+		assertEquals(12, t3.get(0).asInteger().intValue());
+	}
+	
+	@Test
+	public void testEmptyResolver() throws Exception {
+		Tree out = new Promise(r -> {
+			r.resolve();
+		}).waitFor();
+		assertTrue(out.isNull());
+	}
+	
+	@Test
+	public void testThrowInResolver() throws Exception {
+		try {
+			new Promise(r -> {
+				r.reject( new IllegalAccessError("test1"));
+			}).waitFor();
+		} catch (Throwable e) {
+			if (e.toString().contains("test1")) {
+				return;
+			}
+		}
+		assertTrue(false);
+	}
+	
 }
