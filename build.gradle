@@ -1,0 +1,100 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'com.bmuschko.nexus'
+apply plugin: 'jacoco'
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
+// --- REPOSITORIES ---
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+// --- JACOCO ---
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+// --- DEPENDENCIES ---
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    testCompile 'junit:junit:4.12'
+
+	// ================== DATATREE CORE =======================
+	    
+    // https://mvnrepository.com/artifact/com.github.berkesa/datatree-core
+	compile group: 'com.github.berkesa', name: 'datatree-core', version: '1.0.5'
+	
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+group = 'com.github.berkesa'
+
+version = '1.0.1-SNAPSHOT'
+// version = '1.0.1'
+
+modifyPom {
+    project {
+        artifactId 'datatree-promise'
+        name 'Promise for Java'
+        description "ES6-like Promise, based on the Java8's CompletableFuture API."
+        url 'https://berkesa.github.io/datatree-promise/'
+        inceptionYear '2018'
+
+        scm {
+            url 'https://berkesa.github.io/datatree-promise/'
+            connection 'scm:https://github.com/berkesa/datatree-promise.git'
+            developerConnection 'scm:git://github.com/berkesa/datatree-promise.git'
+        }
+
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+        
+        dependencies {
+            dependency {
+                groupId 'com.github.berkesa'
+                artifactId 'datatree-core'
+                // version '1.0.5-SNAPSHOT'
+                version '1.0.5'
+                scope 'runtime'
+            }        
+        }
+
+        developers {
+            developer {
+                id 'berkesa'
+                name 'Andras Berkes'
+                email 'andras.berkes@programmer.net'
+            }
+        }
+    }
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+	snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
+}
