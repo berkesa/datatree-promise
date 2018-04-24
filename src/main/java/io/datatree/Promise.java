@@ -72,13 +72,18 @@ import io.datatree.Tree;
  */
 public class Promise {
 
-	// --- INTERNAL COMPLETABLE FUTURE ---
+	// --- INTERNAL COMPLETABLE FUTURES ---
 
 	/**
 	 * An internal CompletableFuture, what does the working logic of this
 	 * Promise.
 	 */
 	protected final CompletableFuture<Tree> future;
+
+	/**
+	 * Root CompletableFuture of the "waterfall" logic.
+	 */
+	protected final CompletableFuture<Tree> root;
 
 	// --- STATIC CONSTRUCTORS ---
 
@@ -129,7 +134,7 @@ public class Promise {
 	 * @return new REJECTED/COMPLETED EXCEPTIONALLY Promise
 	 */
 	public static final Promise reject() {
-		return reject(new Exception());
+		return reject(new IllegalStateException("Promise rejected"));
 	}
 
 	// --- PUBLIC CONSTRUCTOR ---
@@ -138,7 +143,7 @@ public class Promise {
 	 * Creates an empty PENDING/INCOMPLETED Promise.
 	 */
 	public Promise() {
-		future = new CompletableFuture<>();
+		root = future = new CompletableFuture<>();
 	}
 
 	/**
@@ -152,7 +157,7 @@ public class Promise {
 	 * </pre>
 	 */
 	public Promise(Initializer initializer) {
-		future = new CompletableFuture<>();
+		root = future = new CompletableFuture<>();
 		try {
 			initializer.init(new Resolver(future));
 		} catch (Throwable cause) {
@@ -169,15 +174,21 @@ public class Promise {
 	 *            BigInteger, BigDecimal, and Java Collections with these types.
 	 */
 	public Promise(Object value) {
-		future = toCompletableFuture(value);
+		root = future = toCompletableFuture(value);
 	}
 
-	// --- PROTECTED CONSTRUCTOR ---
+	// --- PROTECTED CONSTRUCTORS ---
 
-	protected Promise(CompletableFuture<Tree> future) {
+	protected Promise(CompletableFuture<Tree> future, CompletableFuture<Tree> root) {
 		this.future = future;
+		this.root = root;
 	}
 
+	public Promise(Object value, CompletableFuture<Tree> root) {
+		future = toCompletableFuture(value);
+		this.root = root;
+	}
+	
 	// --- WATERFALL FUNCTION ---
 
 	/**
@@ -215,7 +226,7 @@ public class Promise {
 			} catch (Throwable cause) {
 				return cause;
 			}
-		}));
+		}), root);
 	}
 
 	/**
@@ -244,7 +255,7 @@ public class Promise {
 				return cause;
 			}
 			return data;
-		}));
+		}), root);
 	}
 
 	// --- ERROR HANDLER METHODS ---
@@ -279,7 +290,7 @@ public class Promise {
 				}
 			}
 			return data;
-		}));
+		}), root);
 	}
 
 	/**
@@ -308,7 +319,7 @@ public class Promise {
 				}
 			}
 			return data;
-		}));
+		}), root);
 	}
 
 	// --- COMPLETE UNRESOLVED / INCOMPLETED PROMISE ---
@@ -355,7 +366,7 @@ public class Promise {
 	 *         to a completed state, else {@code false}
 	 */
 	public boolean complete(Object value) {
-		return future.complete(toTree(value));
+		return root.complete(toTree(value));
 	}
 
 	/**
@@ -378,7 +389,7 @@ public class Promise {
 	 *         to a completed state, else {@code false}
 	 */
 	public boolean complete(Throwable error) {
-		return future.completeExceptionally(error);
+		return root.completeExceptionally(error);
 	}
 
 	// --- STATUS ---

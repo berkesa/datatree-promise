@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/berkesa/datatree-promise.svg?branch=master)](https://travis-ci.org/berkesa/datatree-promise)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7e4435de02d24edfa313bf8f56d5ea0e)](https://www.codacy.com/app/berkesa/datatree-promise?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=berkesa/datatree-promise&amp;utm_campaign=Badge_Grade)
+[![codecov](https://codecov.io/gh/berkesa/datatree-promise/branch/master/graph/badge.svg)](https://codecov.io/gh/berkesa/datatree-promise)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/berkesa/datatree-adapters/master/LICENSE)
 
 # Promise for Java
