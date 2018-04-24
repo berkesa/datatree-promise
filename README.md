@@ -6,7 +6,7 @@ resolved value, or a reason that it's not resolved (e.g., a network error
 occurred). Promise users can attach callbacks to handle the fulfilled value
 or the reason for rejection.
 
-## Sample "waterfall" processing
+Sample "waterfall" processing:
 
 ```java
 Promise.resolve().then(in -> {
