@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class PromiseTest extends TestCase {
@@ -518,7 +517,7 @@ public class PromiseTest extends TestCase {
 				return;
 			}
 		}
-		throw new AssertionFailedError();
+		fail();
 	}
 	
 	@Test
@@ -534,7 +533,7 @@ public class PromiseTest extends TestCase {
 				return;
 			}
 		}
-		throw new AssertionFailedError();
+		fail();
 	}
 	
 	@Test
@@ -572,7 +571,7 @@ public class PromiseTest extends TestCase {
 				return;
 			}
 		}
-		throw new AssertionFailedError();
+		fail();
 	}
 
 	@Test
@@ -586,7 +585,7 @@ public class PromiseTest extends TestCase {
 				return;
 			}
 		}
-		throw new AssertionFailedError();
+		fail();
 	}
 		
 }
