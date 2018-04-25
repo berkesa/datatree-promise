@@ -12,46 +12,6 @@ resolved value, or a reason that it's not resolved (e.g., a network error
 occurred). Promise users can attach callbacks to handle the fulfilled value
 or the reason for rejection.
 
-## Usage
-
-```java
-Promise.resolve().then(in -> {
-
-	Tree out = new Tree();
-	out.put("a", 1);
-	out.put("b", 2);
-	return out;
-
-}).then(in -> {
-
-	int a = in.get("a", -1);
-	int b = in.get("b", -1);
-	return a + b;
-
-}).then(in -> {
-
-	int sub = in.asInteger();
-
-	// You can return an another Promise:
-	return Promise.resolve("OK!");
-
-}).then(in -> {
-
-	if (!"OK".equals(in.asString())) {
-		throw new Exception("Invalid value!");
-	}
-
-	// The "catch" is a protected name in Java,
-	// use "catchError" instead:
-
-}).catchError(err -> {
-
-	System.out.println("Error: " + err);
-	return "foo";
-
-});
-```
-
 ## Download
 
 If you use Maven, add the following dependency to your pom.xml:
@@ -66,7 +26,7 @@ If you use Maven, add the following dependency to your pom.xml:
 
 [...or download the JARs directly from the Maven Central](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.berkesa%22)
 
-## More samples
+## Usage
 
 ### Creating Promises
 
@@ -209,8 +169,48 @@ for (Tree result: p.waitFor()) {
 // b
 // c
 ```
-		
-### More information about ES6 Promises
+
+### A complex sample
+
+```java
+Promise.resolve().then(in -> {
+
+	Tree out = new Tree();
+	out.put("a", 1);
+	out.put("b", 2);
+	return out;
+
+}).then(in -> {
+
+	int a = in.get("a", -1);
+	int b = in.get("b", -1);
+	return a + b;
+
+}).then(in -> {
+
+	int sub = in.asInteger();
+
+	// You can return an another Promise:
+	return Promise.resolve("OK!");
+
+}).then(in -> {
+
+	if (!"OK".equals(in.asString())) {
+		throw new Exception("Invalid value!");
+	}
+
+	// The "catch" is a protected name in Java,
+	// use "catchError" instead:
+
+}).catchError(err -> {
+
+	System.out.println("Error: " + err);
+	return "foo";
+
+});
+```
+
+### More information about ES6 /JavaScript/ Promises
 
 https://www.datchley.name/es6-promises/
 
