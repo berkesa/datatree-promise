@@ -245,7 +245,7 @@ public class Promise {
 	public Promise then(CheckedConsumer<Tree> action) {
 		return new Promise(future.handle((data, error) -> {
 			if (error != null) {
-				return error;
+				return error; // $COVERAGE-IGNORE$
 			}
 			try {
 				action.accept(data);
@@ -514,7 +514,7 @@ public class Promise {
 					}
 					r.resolve(array);
 				} catch (Throwable cause) {
-					r.reject(cause);
+					r.reject(cause); // $COVERAGE-IGNORE$
 				}
 			});
 		});
@@ -575,7 +575,7 @@ public class Promise {
 					}
 					r.resolve((Tree) object);
 				} catch (Throwable cause) {
-					r.reject(cause);
+					r.reject(cause); // $COVERAGE-IGNORE$
 				}
 			});
 		});
@@ -592,7 +592,7 @@ public class Promise {
 	 */
 	protected static final CompletableFuture<Tree> toCompletableFuture(Object object) {
 		if (object == null) {
-			return CompletableFuture.completedFuture(null);
+			return CompletableFuture.completedFuture(null); // $COVERAGE-IGNORE$
 		}
 		if (object instanceof CompletableFuture) {
 			return ((CompletableFuture<?>) object).thenCompose(Promise::toCompletableFuture);
@@ -606,7 +606,7 @@ public class Promise {
 			return future;
 		}
 		if (object instanceof CompletionStage) {
-			return (((CompletionStage<?>) object).toCompletableFuture()).thenCompose(Promise::toCompletableFuture);
+			return (((CompletionStage<?>) object).toCompletableFuture()).thenCompose(Promise::toCompletableFuture); // $COVERAGE-IGNORE$
 		}
 		return CompletableFuture.completedFuture(toTree(object));
 	}
@@ -629,10 +629,7 @@ public class Promise {
 		if (object instanceof Map) {
 			return new Tree((Map<String, Object>) object);
 		}
-		if (object instanceof Collection) {
-			return new Tree((Collection<Object>) object);
-		}
-		return new Tree().setObject(object);
+		return new Tree((Tree) null, null, object);
 	}
 
 	// --- SUBCLASSES AND INTERFACES ---
