@@ -245,7 +245,7 @@ public class Promise {
 	public Promise then(CheckedConsumer<Tree> action) {
 		return new Promise(future.handle((data, error) -> {
 			if (error != null) {
-				return error; // $COVERAGE-IGNORE$
+				return error; // codecov ignore
 			}
 			try {
 				action.accept(data);
@@ -514,7 +514,7 @@ public class Promise {
 					}
 					r.resolve(array);
 				} catch (Throwable cause) {
-					r.reject(cause); // $COVERAGE-IGNORE$
+					r.reject(cause); // codecov ignore
 				}
 			});
 		});
@@ -575,7 +575,7 @@ public class Promise {
 					}
 					r.resolve((Tree) object);
 				} catch (Throwable cause) {
-					r.reject(cause); // $COVERAGE-IGNORE$
+					r.reject(cause); // codecov ignore
 				}
 			});
 		});
@@ -592,7 +592,7 @@ public class Promise {
 	 */
 	protected static final CompletableFuture<Tree> toCompletableFuture(Object object) {
 		if (object == null) {
-			return CompletableFuture.completedFuture(null); // $COVERAGE-IGNORE$
+			return CompletableFuture.completedFuture(null); // codecov ignore
 		}
 		if (object instanceof CompletableFuture) {
 			return ((CompletableFuture<?>) object).thenCompose(Promise::toCompletableFuture);
@@ -606,7 +606,7 @@ public class Promise {
 			return future;
 		}
 		if (object instanceof CompletionStage) {
-			return (((CompletionStage<?>) object).toCompletableFuture()).thenCompose(Promise::toCompletableFuture); // $COVERAGE-IGNORE$
+			return (((CompletionStage<?>) object).toCompletableFuture()).thenCompose(Promise::toCompletableFuture); // codecov ignore
 		}
 		return CompletableFuture.completedFuture(toTree(object));
 	}
