@@ -132,6 +132,12 @@ public class PromiseTest extends TestCase {
 		p = new Promise();
 		p.complete(tree);
 		checkTree(p, tree);
+		
+		// Object
+		Object o = new Object();
+		p = new Promise();
+		p.complete(o);
+		assertEquals(o, p.waitFor().asObject());
 	}
 	
 	// Number
