@@ -17,13 +17,14 @@
  */
 package io.datatree;
 
+import java.net.InetAddress;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
-
-import io.datatree.Tree;
 
 /**
  * ES6-like Promise, based on the Java8's CompletableFuture API. A Promise is an
@@ -108,7 +109,7 @@ public class Promise {
 	 * @return new RESOLVED/COMPLETED Promise
 	 */
 	public static final Promise resolve(Object value) {
-		return new Promise(toCompletableFuture(value));
+		return new Promise(value);
 	}
 
 	/**
@@ -120,9 +121,7 @@ public class Promise {
 	 * @return new REJECTED/COMPLETED EXCEPTIONALLY Promise
 	 */
 	public static final Promise reject(Throwable error) {
-		CompletableFuture<Tree> future = new CompletableFuture<>();
-		future.completeExceptionally(error);
-		return new Promise(future);
+		return new Promise(error);
 	}
 
 	/**
@@ -134,7 +133,105 @@ public class Promise {
 		return reject(new IllegalStateException("Promise rejected"));
 	}
 
-	// --- PUBLIC CONSTRUCTOR ---
+	// --- FAST STATIC CONSTRUCTORS FOR BASIC TYPES ---
+
+	/**
+	 * Returns a Promise that is resolved with the given numeric value.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return new RESOLVED/COMPLETED Promise
+	 */
+	public static final Promise resolve(Number value) {
+		return new Promise(value);
+	}
+
+	/**
+	 * Returns a Promise that is resolved with the given boolean value.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return new RESOLVED/COMPLETED Promise
+	 */
+	public static final Promise resolve(boolean value) {
+		return new Promise(value);
+	}
+
+	/**
+	 * Returns a Promise that is resolved with the given byte array.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return new RESOLVED/COMPLETED Promise
+	 */
+	public static final Promise resolve(byte[] value) {
+		return new Promise(value);
+	}
+
+	/**
+	 * Returns a Promise that is resolved with the given text.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return new RESOLVED/COMPLETED Promise
+	 */
+	public static final Promise resolve(String value) {
+		return new Promise(value);
+	}
+
+	/**
+	 * Returns a Promise that is resolved with the given date.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return new RESOLVED/COMPLETED Promise
+	 */
+	public static final Promise resolve(Date value) {
+		return new Promise(value);
+	}
+
+	/**
+	 * Returns a Promise that is resolved with the given UUID.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return new RESOLVED/COMPLETED Promise
+	 */
+	public static final Promise resolve(UUID value) {
+		return new Promise(value);
+	}
+
+	/**
+	 * Returns a Promise that is resolved with the given InetAddress.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return new RESOLVED/COMPLETED Promise
+	 */
+	public static final Promise resolve(InetAddress value) {
+		return new Promise(value);
+	}
+
+	/**
+	 * Returns a Promise that is resolved with the given Tree.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return new RESOLVED/COMPLETED Promise
+	 */
+	public static final Promise resolve(Tree value) {
+		return new Promise(value);
+	}
+
+	// --- PUBLIC CONSTRUCTORS ---
 
 	/**
 	 * Creates an empty PENDING/INCOMPLETED Promise.
@@ -167,7 +264,7 @@ public class Promise {
 	}
 
 	/**
-	 * Creates a Promise.
+	 * Creates a resolved / completed Promise.
 	 *
 	 * @param value
 	 *            Promise, CompletableFuture, Tree, String, int, double, byte,
@@ -178,10 +275,97 @@ public class Promise {
 		root = future = toCompletableFuture(value);
 	}
 
-	// --- PROTECTED CONSTRUCTOR ---
+	// --- FAST CONSTRUCTORS FOR BASIC TYPES ---
 
-	public Promise(Object value, CompletableFuture<Tree> root) {
+	/**
+	 * Creates a Promise that is resolved with the given numeric value.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 */
+	public Promise(Number value) {
+		root = future = CompletableFuture.completedFuture(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * Creates a Promise that is resolved with the given boolean value.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 */
+	public Promise(boolean value) {
+		root = future = CompletableFuture.completedFuture(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * Creates a Promise that is resolved with the given byte array.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 */
+	public Promise(byte[] value) {
+		root = future = CompletableFuture.completedFuture(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * Creates a Promise that is resolved with the given text.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 */
+	public Promise(String value) {
+		root = future = CompletableFuture.completedFuture(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * Creates a Promise that is resolved with the given date.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 */
+	public Promise(Date value) {
+		root = future = CompletableFuture.completedFuture(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * Creates a Promise that is resolved with the given UUID.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 */
+	public Promise(UUID value) {
+		root = future = CompletableFuture.completedFuture(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * Creates a Promise that is resolved with the given InetAddress.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 */
+	public Promise(InetAddress value) {
+		root = future = CompletableFuture.completedFuture(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * Creates a Promise that is resolved with the given Tree.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 */
+	public Promise(Tree value) {
+		root = future = CompletableFuture.completedFuture(value);
+	}
+
+	// --- PROTECTED CONSTRUCTORS ---
+
+	protected Promise(Object value, CompletableFuture<Tree> root) {
 		future = toCompletableFuture(value);
+		this.root = root;
+	}
+
+	protected Promise(Number value, CompletableFuture<Tree> root) {
+		future = CompletableFuture.completedFuture(new Tree((Tree) null, null, value));
 		this.root = root;
 	}
 
@@ -395,6 +579,112 @@ public class Promise {
 		return root.completeExceptionally(error);
 	}
 
+	// --- FAST COMPLETE FUNCTIONS FOR BASIC TYPES ---
+
+	/**
+	 * If not already completed, sets the value to the given numeric value.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return {@code true} if this invocation caused this Promise to transition
+	 *         to a completed state, else {@code false}
+	 */
+	public boolean complete(Number value) {
+		return root.complete(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * If not already completed, sets the value to the given boolean value.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return {@code true} if this invocation caused this Promise to transition
+	 *         to a completed state, else {@code false}
+	 */
+	public boolean complete(boolean value) {
+		return root.complete(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * If not already completed, sets the value to the given byte array.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return {@code true} if this invocation caused this Promise to transition
+	 *         to a completed state, else {@code false}
+	 */
+	public boolean complete(byte[] value) {
+		return root.complete(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * If not already completed, sets the value to the given text.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return {@code true} if this invocation caused this Promise to transition
+	 *         to a completed state, else {@code false}
+	 */
+	public boolean complete(String value) {
+		return root.complete(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * If not already completed, sets the value to the given date.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return {@code true} if this invocation caused this Promise to transition
+	 *         to a completed state, else {@code false}
+	 */
+	public boolean complete(Date value) {
+		return root.complete(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * If not already completed, sets the value to the given UUID.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return {@code true} if this invocation caused this Promise to transition
+	 *         to a completed state, else {@code false}
+	 */
+	public boolean complete(UUID value) {
+		return root.complete(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * If not already completed, sets the value to the given InetAddress.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return {@code true} if this invocation caused this Promise to transition
+	 *         to a completed state, else {@code false}
+	 */
+	public boolean complete(InetAddress value) {
+		return root.complete(new Tree((Tree) null, null, value));
+	}
+
+	/**
+	 * If not already completed, sets the value to the given Tree.
+	 * 
+	 * @param value
+	 *            the value of the Promise
+	 *
+	 * @return {@code true} if this invocation caused this Promise to transition
+	 *         to a completed state, else {@code false}
+	 */
+	public boolean complete(Tree value) {
+		return root.complete(value);
+	}
+
 	// --- STATUS ---
 
 	/**
@@ -606,7 +896,8 @@ public class Promise {
 			return future;
 		}
 		if (object instanceof CompletionStage) {
-			return (((CompletionStage<?>) object).toCompletableFuture()).thenCompose(Promise::toCompletableFuture); // codecov ignore
+			return (((CompletionStage<?>) object).toCompletableFuture()).thenCompose(Promise::toCompletableFuture); // codecov
+																													// ignore
 		}
 		return CompletableFuture.completedFuture(toTree(object));
 	}
@@ -632,7 +923,7 @@ public class Promise {
 		return new Tree((Tree) null, null, object);
 	}
 
-	// --- SUBCLASSES AND INTERFACES ---
+	// --- INITALIZER / RESOLVER ---
 
 	@FunctionalInterface
 	public static interface Initializer {
@@ -654,7 +945,7 @@ public class Promise {
 		}
 
 		/**
-		 * Resolve the value of the current Promise with the given value.
+		 * Resolves the value of the current Promise with the given value.
 		 * Allowed Object types of the "value" parameter are: Tree, String, int,
 		 * double, byte, float, short, long, boolean, byte[], UUID, Date,
 		 * InetAddress, BigInteger, BigDecimal, and Java Collections with these
@@ -678,7 +969,93 @@ public class Promise {
 			future.completeExceptionally(error);
 		}
 
+		// --- FAST RESOLVERS FOR BASIC TYPES ---
+
+		/**
+		 * Resolves the value of the current Promise with the given numeric
+		 * value.
+		 * 
+		 * @param value
+		 *            the value of the Promise
+		 */
+		public final void resolve(Number value) {
+			future.complete(new Tree((Tree) null, null, value));
+		}
+
+		/**
+		 * Resolves the value of the current Promise with the given boolean
+		 * value.
+		 * 
+		 * @param value
+		 *            the value of the Promise
+		 */
+		public final void resolve(boolean value) {
+			future.complete(new Tree((Tree) null, null, value));
+		}
+
+		/**
+		 * Resolves the value of the current Promise with the given byte array.
+		 * 
+		 * @param value
+		 *            the value of the Promise
+		 */
+		public final void resolve(byte[] value) {
+			future.complete(new Tree((Tree) null, null, value));
+		}
+
+		/**
+		 * Resolves the value of the current Promise with the given text.
+		 * 
+		 * @param value
+		 *            the value of the Promise
+		 */
+		public final void resolve(String value) {
+			future.complete(new Tree((Tree) null, null, value));
+		}
+
+		/**
+		 * Resolves the value of the current Promise with the given date.
+		 * 
+		 * @param value
+		 *            the value of the Promise
+		 */
+		public final void resolve(Date value) {
+			future.complete(new Tree((Tree) null, null, value));
+		}
+
+		/**
+		 * Resolves the value of the current Promise with the given UUID.
+		 * 
+		 * @param value
+		 *            the value of the Promise
+		 */
+		public final void resolve(UUID value) {
+			future.complete(new Tree((Tree) null, null, value));
+		}
+
+		/**
+		 * Resolves the value of the current Promise with the given InetAddress.
+		 * 
+		 * @param value
+		 *            the value of the Promise
+		 */
+		public final void resolve(InetAddress value) {
+			future.complete(new Tree((Tree) null, null, value));
+		}
+
+		/**
+		 * Resolves the value of the current Promise with the given Tree.
+		 * 
+		 * @param value
+		 *            the value of the Promise
+		 */
+		public final void resolve(Tree value) {
+			future.complete(value);
+		}
+
 	}
+
+	// --- INTERFACES ---
 
 	@FunctionalInterface
 	public static interface CheckedConsumer<IN> {
@@ -688,7 +1065,7 @@ public class Promise {
 		 *
 		 * @param in
 		 *            the input argument
-		 *            
+		 * 
 		 * @throws Throwable
 		 *             any processing error
 		 */
@@ -704,7 +1081,7 @@ public class Promise {
 		 *
 		 * @param in
 		 *            the function argument
-		 *            
+		 * 
 		 * @return the function result
 		 * 
 		 * @throws Throwable
