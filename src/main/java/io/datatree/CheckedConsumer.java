@@ -17,6 +17,15 @@
  */
 package io.datatree;
 
+/**
+ * Checked "function" without return value. Sample code:
+ * 
+ * <pre>
+ * return Promise.resolve().<b>then((value) -&gt; {</b>
+ *   <i>// ...do something without any return value...</i>
+ * <b>});</b>
+ * </pre>
+ */
 @FunctionalInterface
 public interface CheckedConsumer<T> {
 

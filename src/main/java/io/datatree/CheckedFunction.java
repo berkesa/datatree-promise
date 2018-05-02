@@ -17,6 +17,22 @@
  */
 package io.datatree;
 
+/**
+ * Checked function with a return value. Sample code:
+ * 
+ * <pre>
+ * return Promise.resolve().<b>then(value -&gt; {</b>
+ *   <i>// ...do something...</i>
+ *   return value;
+ * <b>}).then(value -&gt; {</b>
+ *   <i>// ...do something...</i>
+ *   return value;
+ * <b>})</b>.catchError(error -&gt; {
+ *   <i>// ...error handling...</i>
+ *   return new Tree().put("key.subkey", "value");
+ * });
+ * </pre>
+ */
 @FunctionalInterface
 public interface CheckedFunction<T> {
 

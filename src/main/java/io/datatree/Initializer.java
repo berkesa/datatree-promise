@@ -17,6 +17,17 @@
  */
 package io.datatree;
 
+/**
+ * Asynchronous initializer. Sample code:
+ * 
+ * <pre>
+ * <b>return new Promise(r -&gt; {</b>
+ *   Tree value = new Tree();
+ *   value.put("a.b.c", 3);
+ *   r.resolve(value);
+ * <b>});</b>
+ * </pre>
+ */
 @FunctionalInterface
 public interface Initializer {
 

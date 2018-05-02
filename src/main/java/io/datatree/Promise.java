@@ -244,7 +244,7 @@ public class Promise {
 	 * Creates a Promise with an asynchronous initializer. Sample code:
 	 * 
 	 * <pre>
-	 * <b>return new Promise((r) -&gt; {</b>
+	 * <b>return new Promise(r -&gt; {</b>
 	 *   Tree value = new Tree();
 	 *   value.put("a.b.c", 3);
 	 *   r.resolve(value);
@@ -786,7 +786,7 @@ public class Promise {
 			futures[i] = promises[i].future;
 		}
 		CompletableFuture<Void> all = CompletableFuture.allOf(futures);
-		return new Promise((r) -> {
+		return new Promise(r -> {
 			all.whenComplete((Void, error) -> {
 				try {
 					if (error != null) {
@@ -851,7 +851,7 @@ public class Promise {
 			futures[i] = promises[i].future;
 		}
 		CompletableFuture<Object> any = CompletableFuture.anyOf(futures);
-		return new Promise((r) -> {
+		return new Promise(r -> {
 			any.whenComplete((object, error) -> {
 				try {
 					if (error != null) {

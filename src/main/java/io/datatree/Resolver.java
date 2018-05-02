@@ -24,6 +24,17 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Asynchronous initializer. Sample code:
+ * 
+ * <pre>
+ * <b>return new Promise(resolver -&gt; {</b>
+ *   Tree value = new Tree();
+ *   value.put("a.b.c", 3);
+ *   resolver.resolve(value);
+ * <b>});</b>
+ * </pre>
+ */
 public final class Resolver {
 
 	// --- VARIABLES ---
