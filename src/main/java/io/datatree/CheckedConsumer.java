@@ -18,7 +18,7 @@
 package io.datatree;
 
 @FunctionalInterface
-public interface CheckedConsumer<IN> {
+public interface CheckedConsumer<T> {
 
 	/**
 	 * Performs this operation on the given argument.
@@ -29,6 +29,6 @@ public interface CheckedConsumer<IN> {
 	 * @throws Throwable
 	 *             any processing error
 	 */
-	void accept(IN in) throws Throwable;
+	void accept(T in) throws Throwable;
 
 }

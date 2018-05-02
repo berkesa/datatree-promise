@@ -18,7 +18,7 @@
 package io.datatree;
 
 @FunctionalInterface
-public interface CheckedFunction<IN> {
+public interface CheckedFunction<T> {
 
 	/**
 	 * Applies this function to the given argument.
@@ -31,6 +31,6 @@ public interface CheckedFunction<IN> {
 	 * @throws Throwable
 	 *             any processing error
 	 */
-	Object apply(IN in) throws Throwable;
+	Object apply(T in) throws Throwable;
 
 }

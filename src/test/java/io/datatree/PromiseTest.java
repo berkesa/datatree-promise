@@ -36,7 +36,7 @@ import junit.framework.TestCase;
 public class PromiseTest extends TestCase {
 
 	@Test
-	public void testTypes() throws Exception {
+	public void testNumbers() throws Exception {
 		
 		// Number
 		checkNumber(new Promise(123L), 123L);
@@ -47,6 +47,11 @@ public class PromiseTest extends TestCase {
 		Promise p = new Promise();
 		p.complete(123L);
 		checkNumber(p, 123L);
+
+	}
+	
+	@Test
+	public void testBooleans() throws Exception {
 		
 		// boolean
 		checkBoolean(new Promise(true), true);
@@ -54,7 +59,7 @@ public class PromiseTest extends TestCase {
 		checkBoolean(new Promise(r -> {
 			r.resolve(true);
 		}), true);
-		p = new Promise();
+		Promise p = new Promise();
 		p.complete(true);
 		checkBoolean(p, true);
 		
@@ -66,6 +71,11 @@ public class PromiseTest extends TestCase {
 		p = new Promise();
 		p.complete(false);
 		checkBoolean(p, false);
+
+	}
+	
+	@Test
+	public void testBytes() throws Exception {
 		
 		// byte[]
 		String txt = "Hello World";
@@ -75,19 +85,30 @@ public class PromiseTest extends TestCase {
 		checkBytes(new Promise(r -> {
 			r.resolve(bytes);
 		}), bytes);
-		p = new Promise();
+		Promise p = new Promise();
 		p.complete(bytes);
 		checkBytes(p, bytes);
+
+	}
+	
+	@Test
+	public void testStrings() throws Exception {
 		
 		// String
+		String txt = "Hello World";
 		checkString(new Promise(txt), txt);
 		checkString(Promise.resolve(txt), txt);
 		checkString(new Promise(r -> {
 			r.resolve(txt);
 		}), txt);
-		p = new Promise();
+		Promise p = new Promise();
 		p.complete(txt);
 		checkString(p, txt);
+		
+	}
+	
+	@Test
+	public void testDates() throws Exception {
 		
 		// Date
 		Date date = new Date();
@@ -96,9 +117,14 @@ public class PromiseTest extends TestCase {
 		checkDate(new Promise(r -> {
 			r.resolve(date);
 		}), date);
-		p = new Promise();
+		Promise p = new Promise();
 		p.complete(date);
 		checkDate(p, date);
+		
+	}
+	
+	@Test
+	public void testUUIDs() throws Exception {
 		
 		// UUID
 		UUID uuid = UUID.randomUUID();
@@ -107,9 +133,14 @@ public class PromiseTest extends TestCase {
 		checkUUID(new Promise(r -> {
 			r.resolve(uuid);
 		}), uuid);
-		p = new Promise();
+		Promise p = new Promise();
 		p.complete(uuid);
 		checkUUID(p, uuid);
+		
+	}
+	
+	@Test
+	public void testInetAddresses() throws Exception {
 		
 		// InetAddress
 		InetAddress address = InetAddress.getLocalHost();
@@ -118,9 +149,14 @@ public class PromiseTest extends TestCase {
 		checkInetAddress(new Promise(r -> {
 			r.resolve(address);
 		}), address);
-		p = new Promise();
+		Promise p = new Promise();
 		p.complete(address);
 		checkInetAddress(p, address);
+		
+	}
+	
+	@Test
+	public void testTrees() throws Exception {
 		
 		// Tree
 		Tree tree = new Tree().put("a", "b");
@@ -129,7 +165,7 @@ public class PromiseTest extends TestCase {
 		checkTree(new Promise(r -> {
 			r.resolve(tree);
 		}), tree);
-		p = new Promise();
+		Promise p = new Promise();
 		p.complete(tree);
 		checkTree(p, tree);
 		
