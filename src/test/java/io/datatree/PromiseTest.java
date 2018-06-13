@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -173,17 +174,17 @@ public class PromiseTest extends TestCase {
 		Object o = new Object();
 		p = new Promise();
 		p.complete(o);
-		assertEquals(o, p.waitFor().asObject());
+		assertEquals(o, p.waitFor(5000).asObject());
 	}
 	
 	// Number
 	protected void checkNumber(Promise promise, Number value) throws Exception {
-		assertEquals(value, (Number) promise.waitFor().asObject());
+		assertEquals(value, (Number) promise.waitFor(5000).asObject());
 	}
 	
 	// boolean
 	protected void checkBoolean(Promise promise, Boolean value) throws Exception {
-		assertEquals(value, (Boolean) promise.waitFor().asObject());
+		assertEquals(value, (Boolean) promise.waitFor(5000, TimeUnit.MILLISECONDS).asObject());
 	}
 	
 	// byte[]

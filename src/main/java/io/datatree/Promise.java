@@ -25,6 +25,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * ES6-like Promise, based on the Java8's CompletableFuture API. A Promise is an
@@ -734,10 +736,56 @@ public class Promise {
 	 * @throws InterruptedException
 	 *             if the current thread was interrupted while waiting
 	 * @throws ExecutionException
-	 *             if this future completed exceptionally
+	 *             if this Promise completed exceptionally
 	 */
 	public Tree waitFor() throws InterruptedException, ExecutionException {
 		return future.get();
+	}
+
+	/**
+	 * Waits if necessary for this future to complete, and then returns its
+	 * result. It's a blocking operation, do not use this method unless it is
+	 * absolutely necessary for something. Rather use the "then" and
+	 * "catchError" methods.
+	 * 
+	 * @param timeoutMillis
+	 *            the maximum time to wait in MILLISECONDS
+	 * 
+	 * @return result Tree structure
+	 * 
+	 * @throws InterruptedException
+	 *             if the current thread was interrupted while waiting
+	 * @throws ExecutionException
+	 *             if this Promise completed exceptionally
+	 * @throws TimeoutException
+	 *             if this Promise timeouted
+	 */
+	public Tree waitFor(long timeoutMillis) throws InterruptedException, ExecutionException, TimeoutException {
+		return future.get(timeoutMillis, TimeUnit.MILLISECONDS);
+	}
+
+	/**
+	 * Waits if necessary for this future to complete, and then returns its
+	 * result. It's a blocking operation, do not use this method unless it is
+	 * absolutely necessary for something. Rather use the "then" and
+	 * "catchError" methods.
+	 * 
+	 * @param timeout
+	 *            the maximum time to wait
+	 * @param unit
+	 *            the time unit of the timeout argument
+	 * 
+	 * @return result Tree structure
+	 * 
+	 * @throws InterruptedException
+	 *             if the current thread was interrupted while waiting
+	 * @throws ExecutionException
+	 *             if this Promise completed exceptionally
+	 * @throws TimeoutException
+	 *             if this Promise timeouted
+	 */
+	public Tree waitFor(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+		return future.get(timeout, unit);
 	}
 
 	// --- PARALLEL ALL / ALLOF FUNCTION ---
@@ -917,5 +965,5 @@ public class Promise {
 		}
 		return new Tree((Tree) null, null, object);
 	}
-	
+
 }
