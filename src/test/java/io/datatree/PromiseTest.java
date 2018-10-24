@@ -40,14 +40,14 @@ public class PromiseTest extends TestCase {
 	public void testNumbers() throws Exception {
 		
 		// Number
-		checkNumber(new Promise(123L), 123L);
-		checkNumber(Promise.resolve(123L), 123L);
-		checkNumber(new Promise(r -> {
+		assertEqualsNumber(new Promise(123L), 123L);
+		assertEqualsNumber(Promise.resolve(123L), 123L);
+		assertEqualsNumber(new Promise(r -> {
 			r.resolve(123L);
 		}), 123L);
 		Promise p = new Promise();
 		p.complete(123L);
-		checkNumber(p, 123L);
+		assertEqualsNumber(p, 123L);
 
 	}
 	
@@ -55,23 +55,23 @@ public class PromiseTest extends TestCase {
 	public void testBooleans() throws Exception {
 		
 		// boolean
-		checkBoolean(new Promise(true), true);
-		checkBoolean(Promise.resolve(true), true);
-		checkBoolean(new Promise(r -> {
+		assertEqualsBoolean(new Promise(true), true);
+		assertEqualsBoolean(Promise.resolve(true), true);
+		assertEqualsBoolean(new Promise(r -> {
 			r.resolve(true);
 		}), true);
 		Promise p = new Promise();
 		p.complete(true);
-		checkBoolean(p, true);
+		assertEqualsBoolean(p, true);
 		
-		checkBoolean(new Promise(false), false);
-		checkBoolean(Promise.resolve(false), false);
-		checkBoolean(new Promise(r -> {
+		assertEqualsBoolean(new Promise(false), false);
+		assertEqualsBoolean(Promise.resolve(false), false);
+		assertEqualsBoolean(new Promise(r -> {
 			r.resolve(false);
 		}), false);
 		p = new Promise();
 		p.complete(false);
-		checkBoolean(p, false);
+		assertEqualsBoolean(p, false);
 
 	}
 	
@@ -81,14 +81,14 @@ public class PromiseTest extends TestCase {
 		// byte[]
 		String txt = "Hello World";
 		byte[] bytes = txt.getBytes();
-		checkBytes(new Promise(bytes), bytes);
-		checkBytes(Promise.resolve(bytes), bytes);
-		checkBytes(new Promise(r -> {
+		assertEqualsBytes(new Promise(bytes), bytes);
+		assertEqualsBytes(Promise.resolve(bytes), bytes);
+		assertEqualsBytes(new Promise(r -> {
 			r.resolve(bytes);
 		}), bytes);
 		Promise p = new Promise();
 		p.complete(bytes);
-		checkBytes(p, bytes);
+		assertEqualsBytes(p, bytes);
 
 	}
 	
@@ -97,14 +97,14 @@ public class PromiseTest extends TestCase {
 		
 		// String
 		String txt = "Hello World";
-		checkString(new Promise(txt), txt);
-		checkString(Promise.resolve(txt), txt);
-		checkString(new Promise(r -> {
+		assertEqualsString(new Promise(txt), txt);
+		assertEqualsString(Promise.resolve(txt), txt);
+		assertEqualsString(new Promise(r -> {
 			r.resolve(txt);
 		}), txt);
 		Promise p = new Promise();
 		p.complete(txt);
-		checkString(p, txt);
+		assertEqualsString(p, txt);
 		
 	}
 	
@@ -113,14 +113,14 @@ public class PromiseTest extends TestCase {
 		
 		// Date
 		Date date = new Date();
-		checkDate(new Promise(date), date);
-		checkDate(Promise.resolve(date), date);
-		checkDate(new Promise(r -> {
+		assertEqualsDate(new Promise(date), date);
+		assertEqualsDate(Promise.resolve(date), date);
+		assertEqualsDate(new Promise(r -> {
 			r.resolve(date);
 		}), date);
 		Promise p = new Promise();
 		p.complete(date);
-		checkDate(p, date);
+		assertEqualsDate(p, date);
 		
 	}
 	
@@ -129,14 +129,14 @@ public class PromiseTest extends TestCase {
 		
 		// UUID
 		UUID uuid = UUID.randomUUID();
-		checkUUID(new Promise(uuid), uuid);
-		checkUUID(Promise.resolve(uuid), uuid);
-		checkUUID(new Promise(r -> {
+		assertEqualsUUID(new Promise(uuid), uuid);
+		assertEqualsUUID(Promise.resolve(uuid), uuid);
+		assertEqualsUUID(new Promise(r -> {
 			r.resolve(uuid);
 		}), uuid);
 		Promise p = new Promise();
 		p.complete(uuid);
-		checkUUID(p, uuid);
+		assertEqualsUUID(p, uuid);
 		
 	}
 	
@@ -145,14 +145,14 @@ public class PromiseTest extends TestCase {
 		
 		// InetAddress
 		InetAddress address = InetAddress.getLocalHost();
-		checkInetAddress(new Promise(address), address);
-		checkInetAddress(Promise.resolve(address), address);
-		checkInetAddress(new Promise(r -> {
+		assertEqualsInetAddress(new Promise(address), address);
+		assertEqualsInetAddress(Promise.resolve(address), address);
+		assertEqualsInetAddress(new Promise(r -> {
 			r.resolve(address);
 		}), address);
 		Promise p = new Promise();
 		p.complete(address);
-		checkInetAddress(p, address);
+		assertEqualsInetAddress(p, address);
 		
 	}
 	
@@ -161,14 +161,14 @@ public class PromiseTest extends TestCase {
 		
 		// Tree
 		Tree tree = new Tree().put("a", "b");
-		checkTree(new Promise(tree), tree);
-		checkTree(Promise.resolve(tree), tree);
-		checkTree(new Promise(r -> {
+		assertEqualsTree(new Promise(tree), tree);
+		assertEqualsTree(Promise.resolve(tree), tree);
+		assertEqualsTree(new Promise(r -> {
 			r.resolve(tree);
 		}), tree);
 		Promise p = new Promise();
 		p.complete(tree);
-		checkTree(p, tree);
+		assertEqualsTree(p, tree);
 		
 		// Object
 		Object o = new Object();
@@ -178,43 +178,43 @@ public class PromiseTest extends TestCase {
 	}
 	
 	// Number
-	protected void checkNumber(Promise promise, Number value) throws Exception {
+	protected void assertEqualsNumber(Promise promise, Number value) throws Exception {
 		assertEquals(value, (Number) promise.waitFor(5000).asObject());
 	}
 	
 	// boolean
-	protected void checkBoolean(Promise promise, Boolean value) throws Exception {
+	protected void assertEqualsBoolean(Promise promise, Boolean value) throws Exception {
 		assertEquals(value, (Boolean) promise.waitFor(5000, TimeUnit.MILLISECONDS).asObject());
 	}
 	
 	// byte[]
-	protected void checkBytes(Promise promise, byte[] value) throws Exception {
+	protected void assertEqualsBytes(Promise promise, byte[] value) throws Exception {
 		byte[] array = (byte[]) promise.waitFor().asObject();
 		assertTrue(Arrays.equals(array, value));
 	}
 	
 	// String
-	protected void checkString(Promise promise, String value) throws Exception {
+	protected void assertEqualsString(Promise promise, String value) throws Exception {
 		assertEquals(value, (String) promise.waitFor().asObject());
 	}
 	
 	// Date
-	protected void checkDate(Promise promise, Date value) throws Exception {
+	protected void assertEqualsDate(Promise promise, Date value) throws Exception {
 		assertEquals(value, (Date) promise.waitFor().asObject());
 	}
 	
 	// UUID
-	protected void checkUUID(Promise promise, UUID value) throws Exception {
+	protected void assertEqualsUUID(Promise promise, UUID value) throws Exception {
 		assertEquals(value, (UUID) promise.waitFor().asObject());
 	}
 	
 	// InetAddress
-	protected void checkInetAddress(Promise promise, InetAddress value) throws Exception {
+	protected void assertEqualsInetAddress(Promise promise, InetAddress value) throws Exception {
 		assertEquals(value, (InetAddress) promise.waitFor().asObject());
 	}
 	
 	// Tree
-	protected void checkTree(Promise promise, Tree value) throws Exception {
+	protected void assertEqualsTree(Promise promise, Tree value) throws Exception {
 		assertEquals(value, (Tree) promise.waitFor());
 	}
 
