@@ -784,14 +784,12 @@ public class Promise {
 	public Tree waitFor(long timeout, TimeUnit unit) throws Exception {
 		try {
 			return future.get(timeout, unit);			
-		} catch (Exception err) {
-			if (err instanceof ExecutionException) {
-				Throwable cause = err.getCause();
-				if (cause != null && cause instanceof Exception) {
-					throw (Exception) cause;
-				}
+		} catch (ExecutionException outerError) {
+			Throwable cause = outerError.getCause();
+			if (cause != null && cause instanceof Exception) {
+				throw (Exception) cause;
 			}
-			throw err;
+			throw outerError;
 		}
 	}
 
