@@ -37,6 +37,37 @@ import junit.framework.TestCase;
 public class PromiseTest extends TestCase {
 
 	@Test
+	public void testNulls() throws Exception {
+		
+		// Null (parameter = null)
+		Promise p = Promise.resolve((String) null);
+		Tree t = p.waitFor();
+		assertTrue(t.isNull());
+		String s = t.asString();
+		assertNull(s);
+
+		// Null (parameterless resolving)
+		p = Promise.resolve();
+		t = p.waitFor();
+		assertTrue(t.isNull());
+		s = t.asString();
+		assertNull(s);
+
+		// Null (chaining)
+		t = p.then(in -> {
+			
+			assertTrue(in.isNull());
+			String s2 = in.asString();
+			assertNull(s2);
+			return in;
+			
+		}).waitFor();
+		assertTrue(t.isNull());
+		s = t.asString();
+		assertNull(s);
+	}
+	
+	@Test
 	public void testNumbers() throws Exception {
 		
 		// Number
