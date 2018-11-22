@@ -27,6 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -37,7 +39,23 @@ import junit.framework.TestCase;
 public class PromiseTest extends TestCase {
 
 	@Test
-	public void testNulls() throws Exception {
+	public void testInternalErrors() throws Throwable {
+		Throwable e1 = new Throwable();
+		CompletionException e2 = new CompletionException(e1);
+		ExecutionException e3 = new ExecutionException(e2);
+		assertEquals(e1, Promise.getCause((Throwable) e3));
+		assertEquals(e1, Promise.getCause((Throwable) e2));
+		assertEquals(e1, Promise.getCause((Throwable) e1));
+		try {
+			Promise.reject(e2).waitFor();
+			fail();
+		} catch (Throwable any) {
+			assertEquals(e1, any);
+		}
+	}
+
+	@Test
+	public void testNulls() throws Throwable {
 		
 		// Null (parameter = null)
 		Promise p = Promise.resolve((String) null);
@@ -68,7 +86,7 @@ public class PromiseTest extends TestCase {
 	}
 	
 	@Test
-	public void testNumbers() throws Exception {
+	public void testNumbers() throws Throwable {
 		
 		// Number
 		assertEqualsNumber(new Promise(123L), 123L);
@@ -83,7 +101,7 @@ public class PromiseTest extends TestCase {
 	}
 	
 	@Test
-	public void testBooleans() throws Exception {
+	public void testBooleans() throws Throwable {
 		
 		// boolean
 		assertEqualsBoolean(new Promise(true), true);
@@ -107,7 +125,7 @@ public class PromiseTest extends TestCase {
 	}
 	
 	@Test
-	public void testBytes() throws Exception {
+	public void testBytes() throws Throwable {
 		
 		// byte[]
 		String txt = "Hello World";
@@ -124,7 +142,7 @@ public class PromiseTest extends TestCase {
 	}
 	
 	@Test
-	public void testStrings() throws Exception {
+	public void testStrings() throws Throwable {
 		
 		// String
 		String txt = "Hello World";
@@ -140,7 +158,7 @@ public class PromiseTest extends TestCase {
 	}
 	
 	@Test
-	public void testDates() throws Exception {
+	public void testDates() throws Throwable {
 		
 		// Date
 		Date date = new Date();
@@ -156,7 +174,7 @@ public class PromiseTest extends TestCase {
 	}
 	
 	@Test
-	public void testUUIDs() throws Exception {
+	public void testUUIDs() throws Throwable {
 		
 		// UUID
 		UUID uuid = UUID.randomUUID();
@@ -172,7 +190,7 @@ public class PromiseTest extends TestCase {
 	}
 	
 	@Test
-	public void testInetAddresses() throws Exception {
+	public void testInetAddresses() throws Throwable {
 		
 		// InetAddress
 		InetAddress address = InetAddress.getLocalHost();
@@ -188,7 +206,7 @@ public class PromiseTest extends TestCase {
 	}
 	
 	@Test
-	public void testTrees() throws Exception {
+	public void testTrees() throws Throwable {
 		
 		// Tree
 		Tree tree = new Tree().put("a", "b");
@@ -209,48 +227,48 @@ public class PromiseTest extends TestCase {
 	}
 	
 	// Number
-	protected void assertEqualsNumber(Promise promise, Number value) throws Exception {
+	protected void assertEqualsNumber(Promise promise, Number value) throws Throwable {
 		assertEquals(value, (Number) promise.waitFor(5000).asObject());
 	}
 	
 	// boolean
-	protected void assertEqualsBoolean(Promise promise, Boolean value) throws Exception {
+	protected void assertEqualsBoolean(Promise promise, Boolean value) throws Throwable {
 		assertEquals(value, (Boolean) promise.waitFor(5000, TimeUnit.MILLISECONDS).asObject());
 	}
 	
 	// byte[]
-	protected void assertEqualsBytes(Promise promise, byte[] value) throws Exception {
+	protected void assertEqualsBytes(Promise promise, byte[] value) throws Throwable {
 		byte[] array = (byte[]) promise.waitFor().asObject();
 		assertTrue(Arrays.equals(array, value));
 	}
 	
 	// String
-	protected void assertEqualsString(Promise promise, String value) throws Exception {
+	protected void assertEqualsString(Promise promise, String value) throws Throwable {
 		assertEquals(value, (String) promise.waitFor().asObject());
 	}
 	
 	// Date
-	protected void assertEqualsDate(Promise promise, Date value) throws Exception {
+	protected void assertEqualsDate(Promise promise, Date value) throws Throwable {
 		assertEquals(value, (Date) promise.waitFor().asObject());
 	}
 	
 	// UUID
-	protected void assertEqualsUUID(Promise promise, UUID value) throws Exception {
+	protected void assertEqualsUUID(Promise promise, UUID value) throws Throwable {
 		assertEquals(value, (UUID) promise.waitFor().asObject());
 	}
 	
 	// InetAddress
-	protected void assertEqualsInetAddress(Promise promise, InetAddress value) throws Exception {
+	protected void assertEqualsInetAddress(Promise promise, InetAddress value) throws Throwable {
 		assertEquals(value, (InetAddress) promise.waitFor().asObject());
 	}
 	
 	// Tree
-	protected void assertEqualsTree(Promise promise, Tree value) throws Exception {
+	protected void assertEqualsTree(Promise promise, Tree value) throws Throwable {
 		assertEquals(value, (Tree) promise.waitFor());
 	}
 
 	@Test
-	public void testPromise() throws Exception {
+	public void testPromise() throws Throwable {
 
 		// Complete with null
 		Tree out = Promise.resolve().waitFor();
@@ -314,7 +332,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testWaterfall() throws Exception {
+	public void testWaterfall() throws Throwable {
 		Promise promise = new Promise().then(in -> {
 
 			// Scalar processing - return int
@@ -396,7 +414,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testConstructor() throws Exception {
+	public void testConstructor() throws Throwable {
 		CompletableFuture<Tree> future = new CompletableFuture<Tree>();
 		Promise p = new Promise(future);
 		p.complete();
@@ -404,7 +422,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testResolve() throws Exception {
+	public void testResolve() throws Throwable {
 		Tree out;
 
 		out = Promise.resolve(123).waitFor();
@@ -435,7 +453,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testInvalidInit() throws Exception {
+	public void testInvalidInit() throws Throwable {
 		Promise p = new Promise(r -> {
 			throw new IllegalArgumentException("error");
 		}).catchError(err -> {
@@ -446,7 +464,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testExceptionInFunction() throws Exception {
+	public void testExceptionInFunction() throws Throwable {
 		Promise p1 = Promise.resolve(0).then(in -> {
 			if (in.asInteger() == 0) {
 				throw new IllegalArgumentException("test");
@@ -471,7 +489,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testExceptionInConsumer() throws Exception {
+	public void testExceptionInConsumer() throws Throwable {
 		Promise p1 = Promise.resolve(0).then(in -> {
 			if (in.asInteger() == 0) {
 				throw new IllegalArgumentException("test");
@@ -500,7 +518,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testExceptionInErrorHandlerFunction() throws Exception {
+	public void testExceptionInErrorHandlerFunction() throws Throwable {
 		Tree out1 = Promise.resolve(0).then(in -> {
 			if (in.asInteger() == 0) {
 				throw new IllegalArgumentException("test1");
@@ -517,7 +535,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testExceptionInErrorHandlerConsumer() throws Exception {
+	public void testExceptionInErrorHandlerConsumer() throws Throwable {
 		Tree out1 = Promise.resolve(0).then(in -> {
 			if (in.asInteger() == 0) {
 				throw new IllegalArgumentException("test1");
@@ -533,7 +551,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testRejected() throws Exception {
+	public void testRejected() throws Throwable {
 		Promise p = new Promise().then(in -> {
 			if (in.asInteger() == 0) {
 				throw new IllegalArgumentException("test1");
@@ -549,7 +567,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testSimpleComplete() throws Exception {
+	public void testSimpleComplete() throws Throwable {
 
 		// Complete in constructor
 		Promise p = Promise.resolve();
@@ -570,7 +588,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testReturnException() throws Exception {
+	public void testReturnException() throws Throwable {
 		Promise p1 = Promise.resolve(0).then(in -> {
 			if (in.asInteger() == 0) {
 				return new IllegalArgumentException("test");
@@ -587,7 +605,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testAllCollections() throws Exception {
+	public void testAllCollections() throws Throwable {
 		LinkedList<Promise> list = new LinkedList<>();
 		AtomicInteger count = new AtomicInteger();
 		for (int i = 0; i < 10; i++) {
@@ -624,7 +642,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testAllArray() throws Exception {
+	public void testAllArray() throws Throwable {
 		Promise[] array = new Promise[10];
 		AtomicInteger count = new AtomicInteger();
 		for (int i = 0; i < 10; i++) {
@@ -659,7 +677,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testRaceCollections() throws Exception {
+	public void testRaceCollections() throws Throwable {
 		LinkedList<Promise> list = new LinkedList<>();
 		AtomicInteger count = new AtomicInteger();
 		for (int i = 0; i < 10; i++) {
@@ -690,7 +708,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testRaceArray() throws Exception {
+	public void testRaceArray() throws Throwable {
 		Promise[] array = new Promise[10];
 		AtomicInteger count = new AtomicInteger();
 		for (int i = 0; i < 10; i++) {
@@ -721,7 +739,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testThrowInFunction() throws Exception {
+	public void testThrowInFunction() throws Throwable {
 		try {
 			Promise.resolve().then(in -> {
 				if (in.isNull()) {
@@ -738,7 +756,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testThrowInConsumer() throws Exception {
+	public void testThrowInConsumer() throws Throwable {
 		try {
 			Promise.resolve().then(in -> {
 				if (in.isNull()) {
@@ -754,7 +772,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testToTree() throws Exception {
+	public void testToTree() throws Throwable {
 		Tree t1 = Promise.toTree(null);
 		assertTrue(t1.isNull());
 
@@ -770,7 +788,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testEmptyResolver() throws Exception {
+	public void testEmptyResolver() throws Throwable {
 		Tree out = new Promise(r -> {
 			r.resolve();
 		}).waitFor();
@@ -778,7 +796,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testThrowInResolver() throws Exception {
+	public void testThrowInResolver() throws Throwable {
 		try {
 			new Promise(r -> {
 				r.reject(new IllegalAccessError("test1"));
@@ -792,7 +810,7 @@ public class PromiseTest extends TestCase {
 	}
 
 	@Test
-	public void testResolveWithError() throws Exception {
+	public void testResolveWithError() throws Throwable {
 		try {
 			new Promise(r -> {
 				r.resolve(new IllegalAccessError("test1"));

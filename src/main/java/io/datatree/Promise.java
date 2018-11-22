@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -260,7 +261,7 @@ public class Promise {
 		try {
 			initializer.init(new Resolver(future));
 		} catch (Throwable cause) {
-			future.completeExceptionally(cause);
+			future.completeExceptionally(getCause(cause));
 		}
 	}
 
@@ -425,7 +426,7 @@ public class Promise {
 	public Promise then(CheckedConsumer<Tree> action) {
 		return new Promise(future.handle((data, error) -> {
 			if (error != null) {
-				return error; // codecov ignore
+				return error;
 			}
 			try {
 				action.accept(data);
@@ -572,7 +573,7 @@ public class Promise {
 	 *         to a completed state, else {@code false}
 	 */
 	public boolean complete(Throwable error) {
-		return root.completeExceptionally(error);
+		return root.completeExceptionally(getCause(error));
 	}
 
 	// --- FAST COMPLETE FUNCTIONS FOR BASIC TYPES ---
@@ -732,18 +733,14 @@ public class Promise {
 	 * 
 	 * @return result Tree structure
 	 * 
-	 * @throws Exception
+	 * @throws Throwable
 	 *             any (interruption, execution, user-level, etc.) exception
 	 */
-	public Tree waitFor() throws Exception {
+	public Tree waitFor() throws Throwable {
 		try {
 			return future.get();
-		} catch (ExecutionException outerError) {
-			Throwable cause = outerError.getCause();
-			if (cause != null && cause instanceof Exception) {
-				throw (Exception) cause;
-			}
-			throw outerError;
+		} catch (Exception error) {
+			throw getCause(error);
 		}
 	}
 
@@ -758,10 +755,10 @@ public class Promise {
 	 * 
 	 * @return result Tree structure
 	 * 
-	 * @throws Exception
+	 * @throws Throwable
 	 *             any (interruption, execution, user-level, etc.) exception
 	 */
-	public Tree waitFor(long timeoutMillis) throws Exception {
+	public Tree waitFor(long timeoutMillis) throws Throwable {
 		return waitFor(timeoutMillis, TimeUnit.MILLISECONDS);
 	}
 
@@ -781,15 +778,11 @@ public class Promise {
 	 * @throws Exception
 	 *             any (interruption, execution, user-level, etc.) exception
 	 */
-	public Tree waitFor(long timeout, TimeUnit unit) throws Exception {
+	public Tree waitFor(long timeout, TimeUnit unit) throws Throwable {
 		try {
-			return future.get(timeout, unit);			
-		} catch (ExecutionException outerError) {
-			Throwable cause = outerError.getCause();
-			if (cause != null && cause instanceof Exception) {
-				throw (Exception) cause;
-			}
-			throw outerError;
+			return future.get(timeout, unit);
+		} catch (Throwable error) {
+			throw getCause(error);
 		}
 	}
 
@@ -852,7 +845,7 @@ public class Promise {
 					}
 					r.resolve(array);
 				} catch (Throwable cause) {
-					r.reject(cause); // codecov ignore
+					r.reject(cause);
 				}
 			});
 		});
@@ -913,7 +906,7 @@ public class Promise {
 					}
 					r.resolve((Tree) object);
 				} catch (Throwable cause) {
-					r.reject(cause); // codecov ignore
+					r.reject(cause);
 				}
 			});
 		});
@@ -930,7 +923,7 @@ public class Promise {
 	 */
 	protected static final CompletableFuture<Tree> toCompletableFuture(Object object) {
 		if (object == null) {
-			return CompletableFuture.completedFuture(null); // codecov ignore
+			return CompletableFuture.completedFuture(null);
 		}
 		if (object instanceof CompletableFuture) {
 			return ((CompletableFuture<?>) object).thenCompose(Promise::toCompletableFuture);
@@ -940,12 +933,11 @@ public class Promise {
 		}
 		if (object instanceof Throwable) {
 			CompletableFuture<Tree> future = new CompletableFuture<>();
-			future.completeExceptionally((Throwable) object);
+			future.completeExceptionally(getCause((Throwable) object));
 			return future;
 		}
 		if (object instanceof CompletionStage) {
-			return (((CompletionStage<?>) object).toCompletableFuture()).thenCompose(Promise::toCompletableFuture); // codecov
-																													// ignore
+			return (((CompletionStage<?>) object).toCompletableFuture()).thenCompose(Promise::toCompletableFuture);
 		}
 		return CompletableFuture.completedFuture(toTree(object));
 	}
@@ -969,6 +961,43 @@ public class Promise {
 			return new Tree((Map<String, Object>) object);
 		}
 		return new Tree((Tree) null, null, object);
+	}
+
+	/**
+	 * Gets the internal cause from the CompletionExceptions.
+	 * 
+	 * @param error
+	 *            any Throwable
+	 * @return cause
+	 */
+	protected static final Throwable getCause(Throwable error) {
+		Throwable cause = error;
+		if (cause != null) {
+			boolean ee = false;
+			boolean ce = cause instanceof CompletionException;
+			if (!ce) {
+				ee = cause instanceof ExecutionException;
+			}
+			do {
+				if (ce || ee) {
+					Throwable test = cause.getCause();
+					if (test != null) {
+						cause = test;
+					} else {
+						break;
+					}
+				} else {
+					break;
+				}
+				ce = cause instanceof CompletionException;
+				if (ce) {
+					ee = false;
+				} else {
+					ee = cause instanceof ExecutionException;
+				}
+			} while (ce || ee);
+		}
+		return cause;
 	}
 
 }
