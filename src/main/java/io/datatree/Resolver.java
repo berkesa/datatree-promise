@@ -18,7 +18,6 @@
 package io.datatree;
 
 import static io.datatree.Promise.toCompletableFuture;
-import static io.datatree.Promise.getCause;
 
 import java.net.InetAddress;
 import java.util.Date;
@@ -69,14 +68,14 @@ public final class Resolver {
 			if (error == null) {
 				future.complete(data);
 			} else {
-				future.completeExceptionally(getCause(error));
+				future.completeExceptionally(error);
 			}
 			return data;
 		});
 	}
 
 	public final void reject(Throwable error) {
-		future.completeExceptionally(getCause(error));
+		future.completeExceptionally(error);
 	}
 
 	// --- FAST RESOLVERS FOR BASIC TYPES ---

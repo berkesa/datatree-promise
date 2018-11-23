@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>datatree-promise</name>
-	<comment>Project datatree-promise created by Buildship.</comment>
+	<comment>ES6-like Promise, based on the Java8's CompletableFuture API.</comment>
 	<projects>
 	</projects>
 	<buildSpec>

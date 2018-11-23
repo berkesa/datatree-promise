@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -261,7 +260,7 @@ public class Promise {
 		try {
 			initializer.init(new Resolver(future));
 		} catch (Throwable cause) {
-			future.completeExceptionally(getCause(cause));
+			future.completeExceptionally(cause);
 		}
 	}
 
@@ -573,7 +572,7 @@ public class Promise {
 	 *         to a completed state, else {@code false}
 	 */
 	public boolean complete(Throwable error) {
-		return root.completeExceptionally(getCause(error));
+		return root.completeExceptionally(error);
 	}
 
 	// --- FAST COMPLETE FUNCTIONS FOR BASIC TYPES ---
@@ -733,14 +732,18 @@ public class Promise {
 	 * 
 	 * @return result Tree structure
 	 * 
-	 * @throws Throwable
+	 * @throws Exception
 	 *             any (interruption, execution, user-level, etc.) exception
 	 */
-	public Tree waitFor() throws Throwable {
+	public Tree waitFor() throws Exception {
 		try {
 			return future.get();
-		} catch (Exception error) {
-			throw getCause(error);
+		} catch (ExecutionException outerError) {
+			Throwable cause = outerError.getCause();
+			if (cause != null && cause instanceof Exception) {
+				throw (Exception) cause;
+			}
+			throw outerError;
 		}
 	}
 
@@ -755,10 +758,10 @@ public class Promise {
 	 * 
 	 * @return result Tree structure
 	 * 
-	 * @throws Throwable
+	 * @throws Exception
 	 *             any (interruption, execution, user-level, etc.) exception
 	 */
-	public Tree waitFor(long timeoutMillis) throws Throwable {
+	public Tree waitFor(long timeoutMillis) throws Exception {
 		return waitFor(timeoutMillis, TimeUnit.MILLISECONDS);
 	}
 
@@ -778,11 +781,15 @@ public class Promise {
 	 * @throws Exception
 	 *             any (interruption, execution, user-level, etc.) exception
 	 */
-	public Tree waitFor(long timeout, TimeUnit unit) throws Throwable {
+	public Tree waitFor(long timeout, TimeUnit unit) throws Exception {
 		try {
-			return future.get(timeout, unit);
-		} catch (Throwable error) {
-			throw getCause(error);
+			return future.get(timeout, unit);			
+		} catch (ExecutionException outerError) {
+			Throwable cause = outerError.getCause();
+			if (cause != null && cause instanceof Exception) {
+				throw (Exception) cause;
+			}
+			throw outerError;
 		}
 	}
 
@@ -933,7 +940,7 @@ public class Promise {
 		}
 		if (object instanceof Throwable) {
 			CompletableFuture<Tree> future = new CompletableFuture<>();
-			future.completeExceptionally(getCause((Throwable) object));
+			future.completeExceptionally((Throwable) object);
 			return future;
 		}
 		if (object instanceof CompletionStage) {
@@ -961,43 +968,6 @@ public class Promise {
 			return new Tree((Map<String, Object>) object);
 		}
 		return new Tree((Tree) null, null, object);
-	}
-
-	/**
-	 * Gets the internal cause from the CompletionExceptions.
-	 * 
-	 * @param error
-	 *            any Throwable
-	 * @return cause
-	 */
-	protected static final Throwable getCause(Throwable error) {
-		Throwable cause = error;
-		if (cause != null) {
-			boolean ee = false;
-			boolean ce = cause instanceof CompletionException;
-			if (!ce) {
-				ee = cause instanceof ExecutionException;
-			}
-			do {
-				if (ce || ee) {
-					Throwable test = cause.getCause();
-					if (test != null) {
-						cause = test;
-					} else {
-						break;
-					}
-				} else {
-					break;
-				}
-				ce = cause instanceof CompletionException;
-				if (ce) {
-					ee = false;
-				} else {
-					ee = cause instanceof ExecutionException;
-				}
-			} while (ce || ee);
-		}
-		return cause;
 	}
 
 }
