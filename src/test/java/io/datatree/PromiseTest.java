@@ -37,13 +37,32 @@ import junit.framework.TestCase;
 public class PromiseTest extends TestCase {
 
 	@Test
+	public void testExecutionException() throws Exception {
+		IllegalArgumentException err = new IllegalArgumentException("abc");
+		try {
+			Promise.reject(err).waitFor(1000);
+			fail();
+		} catch (Exception cause) {
+			assertEquals(err, cause);
+		}
+	}
+	
+	@Test
 	public void testNulls() throws Exception {
 		
-		// Null (parameter = null)
-		Promise p = Promise.resolve((String) null);
+		// Complete later
+		Promise p = new Promise();
+		p.complete((String) null);
 		Tree t = p.waitFor();
 		assertTrue(t.isNull());
 		String s = t.asString();
+		assertNull(s);
+		
+		// Null (parameter = null)
+		p = Promise.resolve((String) null);
+		t = p.waitFor();
+		assertTrue(t.isNull());
+		s = t.asString();
 		assertNull(s);
 
 		// Null (parameterless resolving)
