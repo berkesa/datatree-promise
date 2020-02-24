@@ -47,6 +47,36 @@ public final class Resolver {
 		this.future = future;
 	}
 
+	// --- STATUS ---
+
+	/**
+	 * Returns {@code true} if this Promise completed exceptionally, in any way.
+	 *
+	 * @return {@code true} if this Promise completed exceptionally
+	 */
+	public boolean isRejected() {
+		return future.isCompletedExceptionally();
+	}
+
+	/**
+	 * Returns {@code true} if this Promise completed normally, in any way.
+	 *
+	 * @return {@code true} if this Promise completed normally
+	 */
+	public boolean isResolved() {
+		return future.isDone() && !future.isCompletedExceptionally() && !future.isCancelled();
+	}
+
+	/**
+	 * Returns {@code true} if this Promise completed in any fashion: normally,
+	 * exceptionally, or via cancellation.
+	 *
+	 * @return {@code true} if completed
+	 */
+	public boolean isDone() {
+		return future.isDone();
+	}
+	
 	// --- RESOLVE / REJECT ---
 	
 	public final void resolve() {
