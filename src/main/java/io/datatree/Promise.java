@@ -260,6 +260,7 @@ public class Promise {
 		try {
 			initializer.init(new Resolver(future));
 		} catch (Throwable cause) {
+			cause.fillInStackTrace();
 			future.completeExceptionally(cause);
 		}
 	}
@@ -401,6 +402,7 @@ public class Promise {
 			try {
 				return action.apply(data);
 			} catch (Throwable cause) {
+				cause.fillInStackTrace();
 				return cause;
 			}
 		}), root);
@@ -430,6 +432,7 @@ public class Promise {
 			try {
 				action.accept(data);
 			} catch (Throwable cause) {
+				cause.fillInStackTrace();
 				return cause;
 			}
 			return data;
@@ -465,6 +468,7 @@ public class Promise {
 				try {
 					return action.apply(error);
 				} catch (Throwable cause) {
+					cause.fillInStackTrace();
 					return cause;
 				}
 			}
@@ -495,6 +499,7 @@ public class Promise {
 				try {
 					action.accept(error);
 				} catch (Throwable cause) {
+					cause.fillInStackTrace();
 					return cause;
 				}
 			}
@@ -852,6 +857,7 @@ public class Promise {
 					}
 					r.resolve(array);
 				} catch (Throwable cause) {
+					cause.fillInStackTrace();
 					r.reject(cause);
 				}
 			});
@@ -913,6 +919,7 @@ public class Promise {
 					}
 					r.resolve((Tree) object);
 				} catch (Throwable cause) {
+					cause.fillInStackTrace();
 					r.reject(cause);
 				}
 			});
