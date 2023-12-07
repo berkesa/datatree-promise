@@ -260,7 +260,7 @@ public class Promise {
 		try {
 			initializer.init(new Resolver(future));
 		} catch (Throwable cause) {
-			cause.fillInStackTrace();
+			fillInStackTrace(cause);
 			future.completeExceptionally(cause);
 		}
 	}
@@ -402,7 +402,7 @@ public class Promise {
 			try {
 				return action.apply(data);
 			} catch (Throwable cause) {
-				cause.fillInStackTrace();
+				fillInStackTrace(cause);
 				return cause;
 			}
 		}), root);
@@ -432,7 +432,7 @@ public class Promise {
 			try {
 				action.accept(data);
 			} catch (Throwable cause) {
-				cause.fillInStackTrace();
+				fillInStackTrace(cause);
 				return cause;
 			}
 			return data;
@@ -468,7 +468,7 @@ public class Promise {
 				try {
 					return action.apply(error);
 				} catch (Throwable cause) {
-					cause.fillInStackTrace();
+					fillInStackTrace(cause);
 					return cause;
 				}
 			}
@@ -499,7 +499,7 @@ public class Promise {
 				try {
 					action.accept(error);
 				} catch (Throwable cause) {
-					cause.fillInStackTrace();
+					fillInStackTrace(cause);
 					return cause;
 				}
 			}
@@ -857,7 +857,7 @@ public class Promise {
 					}
 					r.resolve(array);
 				} catch (Throwable cause) {
-					cause.fillInStackTrace();
+					fillInStackTrace(cause);
 					r.reject(cause);
 				}
 			});
@@ -919,13 +919,19 @@ public class Promise {
 					}
 					r.resolve((Tree) object);
 				} catch (Throwable cause) {
-					cause.fillInStackTrace();
+					fillInStackTrace(cause);
 					r.reject(cause);
 				}
 			});
 		});
 	}
 
+	private static final void fillInStackTrace(Throwable cause) {
+		if (cause != null) {
+			cause.getStackTrace();
+		}
+	}
+	
 	// --- CONVERTERS ---
 
 	/**

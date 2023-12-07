@@ -189,7 +189,7 @@ public final class Resolver {
 	 *            the value of the Promise
 	 */
 	public final void resolve(Tree value) {
-		future.complete(value);
+		future.complete(value == null ? new Tree((Tree) null, null, null) : value);
 	}
 
 }
