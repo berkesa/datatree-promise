@@ -19,11 +19,11 @@ package io.datatree;
 
 import java.util.concurrent.ForkJoinPool;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class WaterfallTest extends TestCase {
+public class WaterfallTest {
 
 	@Test
 	public void testWaterfall() throws Exception {
