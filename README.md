@@ -12,10 +12,6 @@ resolved value, or a reason that it's not resolved (e.g., a network error
 occurred). Promise users can attach callbacks to handle the fulfilled value
 or the reason for rejection.
 
-## Documentation
-
-[![Documentation](https://raw.githubusercontent.com/berkesa/datatree/master/docs/docs-button.png)](https://berkesa.github.io/datatree/promise-introduction.html)
-
 ## License
 
 DataTree is licensed under the Apache License V2, you can use it in your commercial products for free.
