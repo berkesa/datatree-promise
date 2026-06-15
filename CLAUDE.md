@@ -33,8 +33,7 @@ Sources/javadoc/GPG-signed artifacts and Central Portal publishing live under th
 `release` profile (`mvn -Prelease ...`). The javadoc plugin runs with
 `<doclint>none</doclint>` so warnings don't break the javadoc jar on JDK 21.
 
-Compilation uses `javac` via `maven-compiler-plugin` (the legacy Eclipse JDT/ecj
-fork was removed during the Maven migration).
+Compilation uses `javac` via `maven-compiler-plugin`.
 
 ## Architecture
 
