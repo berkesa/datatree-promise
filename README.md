@@ -14,22 +14,12 @@ normalized into a `Tree`, so your handlers always receive a `Tree`.
 
 ## Download
 
-Maven:
-
 ```xml
 <dependency>
     <groupId>com.github.berkesa</groupId>
     <artifactId>datatree-promise</artifactId>
     <version>2.0.0</version>
 </dependency>
-```
-
-Gradle:
-
-```gradle
-dependencies {
-    implementation 'com.github.berkesa:datatree-promise:2.0.0'
-}
 ```
 
 This pulls in `datatree-core` (the `Tree` type) transitively — you don't need to add it
