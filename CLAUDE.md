@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`datatree-promise` is a tiny single-package Java 21 library (`io.datatree`) that
+`datatree-promise` is a tiny single-package Java 11 library (`io.datatree`) that
 implements an ES6-like `Promise` on top of `java.util.concurrent.CompletableFuture`.
 Published to Maven Central as `com.github.berkesa:datatree-promise`. The only
 runtime dependency is `datatree-core` (the `Tree` data structure), which is the
@@ -12,8 +12,9 @@ universal value type flowing through every promise.
 
 ## Build & test
 
-The project is built with **Maven** (`pom.xml`); the baseline is **JDK 21**
-(`<maven.compiler.release>21</maven.compiler.release>`):
+The project is built with **Maven** (`pom.xml`); the bytecode target is **Java 11**
+(`<maven.compiler.release>11</maven.compiler.release>`); minimum consumer runtime: **JDK 11**.
+Build JDK: 17+ (JDK 25 in use).
 
 ```
 mvn clean verify           # compile + test (the CI / definition-of-done gate)
