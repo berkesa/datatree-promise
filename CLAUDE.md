@@ -83,8 +83,8 @@ fast overloads in **all three** of `Promise` (static `resolve`, constructor,
 
 ## Releasing
 
-Version lives in `pom.xml` (`<version>`); the current line is `2.0.0` (use
-`2.0.0-SNAPSHOT` while developing). Commits are tagged by version (e.g. `V1.0.10`).
+Version lives in `pom.xml` (`<version>`); the current line is `2.0.0`. Commits are
+tagged by version (e.g. `V1.0.10`).
 Publishing goes through the `release` profile: `maven-source-plugin` +
 `maven-javadoc-plugin` + `maven-gpg-plugin` (GPG signing) +
 `central-publishing-maven-plugin` (Central Portal, `publishingServerId=central`).
