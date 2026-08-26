@@ -18,7 +18,7 @@ normalized into a `Tree`, so your handlers always receive a `Tree`.
 <dependency>
     <groupId>com.github.berkesa</groupId>
     <artifactId>datatree-promise</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
